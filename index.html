@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeFrom | Easy & Fast Solutions</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="alternate" hreflang="en" href="https://127.0.0.1/index.html">
+    <link rel="alternate" hreflang="ru" href="https://127.0.0.1/ru.html">
+    <link rel="alternate" hreflang="es" href="https://127.0.0.1/es.html">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <script>
+    (function() {
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        if (!savedTheme && prefersDark) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        } else if (savedTheme) {
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+    })();
+    </script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav class="nav-container">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <span>CodeFrom</span>
+                </div>
+
+                <div class="nav-links">
+                    <a href="#about">About</a>
+                    <a href="#projects">Projects</a>
+                    <a href="#team">Team</a>
+                    <a href="#pricing">Pricing</a>
+                    <a href="#contact">Contact</a>
+                </div>
+
+                <div class="nav-actions">
+                    <div class="theme-switcher">
+                        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                            <i class="fas fa-moon"></i>
+                            <i class="fas fa-sun" style="display: none;"></i>
+                        </button>
+                    </div>
+
+                    <div class="language-panel desktop-only">
+                        <a href="index.html" class="lang-btn active" title="English">
+                            <span class="lang-text">EN</span>
+                        </a>
+                        <a href="ru.html" class="lang-btn" title="Русский">
+                            <span class="lang-text">RU</span>
+                        </a>
+                        <a href="es.html" class="lang-btn" title="Español">
+                            <span class="lang-text">ES</span>
+                        </a>
+                    </div>
+
+                    <button class="mobile-lang-btn mobile-only" id="mobileLangBtn" aria-label="Change language">
+                        <span class="current-lang">EN</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+
+                    <button class="mobile-menu-btn mobile-only" id="mobileMenuBtn" aria-label="Menu">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="mobile-language-dropdown" id="mobileLanguageDropdown">
+        <div class="dropdown-content">
+            <a href="index.html" class="dropdown-lang-option active" data-lang="en">
+                <span class="lang-text">English (EN)</span>
+            </a>
+            <a href="ru.html" class="dropdown-lang-option" data-lang="ru">
+                <span class="lang-text">Русский (RU)</span>
+            </a>
+            <a href="es.html" class="dropdown-lang-option" data-lang="es">
+                <span class="lang-text">Español (ES)</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="dropdown-overlay" id="dropdownOverlay"></div>
+    
+    <section class="hero">
+        <div class="container">
+            <div class="tagline">Professional Development Services</div>
+            <h1>Easy solution for your IT project in 2026!</h1>
+            <p>We do work of any complexity because we have real projects behind us that hundreds of people use every day. We do the work on time and give the best conditions for our clients.</p>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-number">1000+</span>
+                    <span class="stat-label">Daily users on our porjects</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">24/7</span>
+                    <span class="stat-label">Support</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">100%</span>
+                    <span class="stat-label">Speed and Quality</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="about">
+        <div class="container">
+            <h2 class="section-title">Why Choose Us?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h3>Real Projects Experience</h3>
+                    <p>We have real projects behind us that hundreds of people use every day. This gives us unique experience and understanding of what clients want to see.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3>On Time Delivery</h3>
+                    <p>We do the work on time and give the best conditions for our clients. We respect deadlines and value your time.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h3>Post-Purchase Support</h3>
+                    <p>We provide maintenance after purchase (host your projects, maintain them). We don't just build - we support.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="projects" id="projects">
+        <div class="container">
+            <h2 class="section-title">Our Featured Projects</h2>
+            <div class="projects-grid">
+                <div class="project-card">
+                    <div class="project-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <i class="fas fa-gamepad"></i>
+                    </div>
+                    <div class="project-content">
+                        <h3>JoyRentStore</h3>
+                        <p>A website for purchasing games used by hundreds of people daily. User-friendly interface with secure payments.</p>
+                        <a href="https://joyrentstore.com" target="_blank" class="project-link">
+                            Visit Website <i class="fas fa-external-link-alt"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <div class="project-image" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="project-content">
+                        <h3>VoiceVortex Bot</h3>
+                        <p>A Telegram bot connected with voicing with a community of 23,000 people.</p>
+                        <a href="https://t.me/VoiceVortexBot" target="_blank" class="project-link">
+                            Try Bot <i class="fas fa-external-link-alt"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <div class="project-image" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                        <i class="fas fa-comment-alt"></i>
+                    </div>
+                    <div class="project-content">
+                        <h3>FGram Messenger</h3>
+                        <p>An anonymous messenger with focus on privacy and security. Open-source solution for private conservations.</p>
+                        <a href="https://fgram.net" target="_blank" class="project-link">
+                            Visit Website <i class="fas fa-external-link-alt"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="team-pricing-section">
+        <div class="container">
+            <div class="team-pricing">
+                <div class="team" id="team">
+                    <h2>Our Team</h2>
+                    <div class="team-member">
+                        <div class="member-avatar">
+                            <i class="fab fa-github"></i>
+                        </div>
+                        <div class="member-info">
+                            <h4>Badover</h4>
+                            <p>Creator, owner of FGram</p>
+                            <a href="https://github.com/badover" target="_blank" class="github-link">
+                                <i class="fab fa-github"></i> github.com/badover
+                            </a>
+                        </div>
+                    </div>
+                    <div class="team-member">
+                        <div class="member-avatar">
+                            <i class="fab fa-github"></i>
+                        </div>
+                        <div class="member-info">
+                            <h4>Furigane</h4>
+                            <p>Fullstack Developer, owner of JoyRentStore</p>
+                            <a href="https://github.com/Furigane" target="_blank" class="github-link">
+                                <i class="fab fa-github"></i> github.com/Furigane
+                            </a>
+                        </div>
+                    </div>
+                    <div class="team-member">
+                        <div class="member-avatar">
+                            <i class="fab fa-github"></i>
+                        </div>
+                        <div class="member-info">
+                            <h4>kalomaze</h4>
+                            <p>Bot&site developer, owner of VoiceVortexBot</p>
+                            <a href="https://github.com/Juranik" target="_blank" class="github-link">
+                                <i class="fab fa-github"></i> https://github.com/Juranik
+                            </a>
+                        </div>
+                    </div>
+                    <div class="team-member">
+                        <div class="member-avatar">
+                            <i class="fab fa-instagram"></i>
+                        </div>
+                        <div class="member-info">
+                            <h4>Instagram</h4>
+                            <p>Follow us for updates</p>
+                            <a href="https://instagram.com/code.from" target="_blank" class="github-link" style="color: #E4405F;">
+                                <i class="fab fa-instagram"></i> Our Instagram
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+               
+                <div class="pricing" id="pricing">
+                    <h2>Our Pricing</h2>
+                    <p class="pricing-subtitle">Prices are negotiable depending on your requirements and project scope</p>
+                    
+                    <div class="price-item">
+                        <h3>Telegram Bot</h3>
+                        <p>Custom Telegram bot with any functionality you need. From simple automation to complex AI-powered bots.</p>
+                        <div class="price">
+                            Starting from <span style="color: var(--secondary);">5$</span>
+                        </div>
+                        <div class="price-note">Price is negotiable based on features</div>
+                    </div>
+                    
+                    <div class="price-item">
+                        <h3>Website</h3>
+                        <p>Responsive website with modern design for all devices. E-commerce, landing pages, web applications.</p>
+                        <div class="price">
+                            Starting from <span style="color: var(--secondary);">20$</span>
+                        </div>
+                        <div class="price-note">Price is negotiable based on complexity</div>
+                    </div>
+                    
+                    <div class="price-item">
+                        <h3>Custom Project</h3>
+                        <p>Any other project - mobile app, desktop software, API development, etc.</p>
+                        <div class="price" style="font-size: 1.8rem;">Price: Negotiable</div>
+                        <div class="price-note">Contact us for a personalized quote</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="contact" id="contact">
+        <div class="container">
+            <h2>Ready to Start Your Project?</h2>
+            <p>Contact us to discuss your project details and get a personalized quote. We'll respond within a few hours.</p>
+            
+            <div class="contact-buttons">
+                <a href="https://t.me/kaliwhoami" target="_blank" class="contact-btn telegram-btn">
+                    <i class="fab fa-telegram-plane"></i> Telegram: @kaliwhoami
+                </a>
+                
+                <a href="https://instagram.com/code.from" target="_blank" class="contact-btn instagram-btn">
+                    <i class="fab fa-instagram"></i> Instagram
+                </a>
+            </div>
+            
+            <div class="contact-info">
+                <p><i class="fas fa-envelope"></i> Email: codefromteam@proton.me</p>
+                <p><i class="fas fa-clock"></i> Response time: Within 1 hour</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <span>CodeFrom</span>
+                </div>
+                <p>Easy and fast solutions for any needs</p>
+                <div class="copyright">
+                    &copy; 2026 CodeFrom. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
