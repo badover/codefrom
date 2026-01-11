@@ -51,6 +51,11 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* Lock scrolling when menus open */
+.menu-open {
+    overflow: hidden;
+}
+
 h1, h2, h3, h4 {
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
@@ -68,15 +73,26 @@ header {
     padding: 1.5rem 0;
     position: sticky;
     top: 0;
-    background-color: rgba(248, 250, 252, 0.95);
+    background-color: var(--bg-primary);
     backdrop-filter: blur(10px);
     z-index: 100;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
     transition: var(--transition);
 }
 
+/* Respect safe-area on notch devices */
+header, .container {
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+}
+
+header {
+    padding-top: calc(1rem + env(safe-area-inset-top));
+    padding-bottom: 1rem;
+}
+
 [data-theme="dark"] header {
-    background-color: rgba(15, 23, 42, 0.95);
+    background-color: var(--bg-primary);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
@@ -902,6 +918,230 @@ footer p {
     }
 }
 
+/* Prevent logo from wrapping on very small iPhones (e.g. 320-430px widths) */
+@media (max-width: 430px) {
+    header {
+        padding: 10px 0;
+    }
+
+    .nav-container {
+        flex-wrap: nowrap !important;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .logo {
+        flex: 0 0 auto;
+        white-space: nowrap;
+        font-size: 1.15rem;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .logo-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        font-size: 1rem;
+    }
+
+    .nav-actions {
+        flex: 0 0 auto;
+        margin-left: auto;
+        gap: 6px;
+    }
+
+    /* hide desktop language buttons to save space */
+    .desktop-only {
+        display: none !important;
+    }
+
+    .mobile-only {
+        display: flex !important;
+    }
+
+    .nav-links {
+        display: none !important;
+    }
+
+    /* reduce logo text wrap risk */
+    .logo span { 
+        display: inline-block;
+        line-height: 1;
+    }
+}
+
+/* Very narrow phones: 300-400px widths (portrait phones) */
+@media (max-width: 400px) {
+    html, body {
+        -webkit-text-size-adjust: 100%;
+    }
+
+    .container {
+        padding-left: 12px;
+        padding-right: 12px;
+        max-width: 100%;
+    }
+
+    header {
+        padding: 8px 0;
+        left: 0;
+        right: 0;
+    }
+
+    .nav-container {
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: nowrap !important;
+    }
+
+    .logo {
+        flex: 0 0 auto;
+        white-space: nowrap;
+        font-size: 1.05rem;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .logo-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 0.95rem;
+    }
+
+    .nav-actions {
+        margin-left: auto;
+        gap: 6px;
+        display: flex;
+        align-items: center;
+    }
+
+    .nav-links {
+        display: none !important;
+    }
+
+    .mobile-only {
+        display: flex !important;
+    }
+
+    .desktop-only {
+        display: none !important;
+    }
+
+    /* Ensure main sections preserve horizontal centering */
+    .hero, .features, .projects, .team-pricing-section, .contact, footer {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    /* Center floating dropdowns on very narrow screens */
+    .mobile-language-dropdown, .dropdown-menu {
+        left: 50% !important;
+        right: auto !important;
+        transform: translateX(-50%) !important;
+        width: calc(100% - 24px);
+        max-width: 360px;
+    }
+
+    /* Prevent slight left-shift by ensuring body content is centered */
+    main, .container > * {
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+/* Extra-small screens: widths <400px and heights <=800px */
+@media (max-width: 399px) and (max-height: 800px) {
+    html, body {
+        overflow-x: hidden;
+        font-size: 15px;
+    }
+
+    .container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    header {
+        padding: 6px 0;
+    }
+
+    .nav-container {
+        gap: 6px;
+        align-items: center;
+        flex-wrap: nowrap !important;
+    }
+
+    /* Hide non-essential controls to free space */
+    .theme-toggle { display: none !important; }
+    .desktop-only { display: none !important; }
+    .mobile-only { display: flex !important; }
+
+    /* Show only logo icon to save horizontal space */
+    .logo span { display: none; }
+    .logo { font-size: 1rem; }
+    .logo-icon { width: 30px; height: 30px; font-size: 0.9rem; }
+
+    /* Ensure action buttons are stacked and full-width where makes sense */
+    .contact-buttons { flex-direction: column; gap: 8px; }
+    .contact-btn { width: 100%; justify-content: center; padding: 10px; }
+
+    /* Scale down hero content so it doesn't overlap header */
+    .hero { padding-top: 5.5rem; padding-bottom: 2.5rem; }
+    .hero h1 { font-size: 1.5rem; line-height: 1.15; }
+    .tagline { font-size: 0.95rem; padding: 0.4rem 1rem; }
+    .hero p { font-size: 0.95rem; }
+
+    /* Collapse grids to single column and reduce gaps */
+    .features-grid, .projects-grid, .team-pricing { grid-template-columns: 1fr; gap: 1rem; }
+
+    /* Center dropdowns and prevent left-shift */
+    .mobile-language-dropdown, .dropdown-menu {
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: calc(100% - 20px);
+    }
+
+    /* Small improvements to avoid accidental horizontal scroll */
+    .feature-card, .project-card, .team, .pricing { padding-left: 12px; padding-right: 12px; }
+}
+
+/* Keep team & pricing side-by-side on very narrow screens with horizontal scroll */
+@media (max-width: 399px) and (max-height: 800px) {
+    .team-pricing {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        gap: 12px;
+        padding-bottom: 8px;
+    }
+
+    .team-pricing > * {
+        flex: 0 0 320px;
+        min-width: 260px;
+        box-sizing: border-box;
+    }
+
+    /* reduce internal padding so cards fit better */
+    .team, .pricing {
+        padding: 16px;
+    }
+
+    /* add a subtle mask to hint horizontal scrolling */
+    .team-pricing::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 100%;
+        width: 28px;
+        pointer-events: none;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5));
+    }
+}
+
 /* Animation Classes */
 @keyframes fadeIn {
     from {
@@ -928,6 +1168,12 @@ header {
     align-items: center;
     gap: 1rem;
 }
+
+/* Swap language panel and theme toggle order (desktop & mobile) */
+.theme-switcher { order: 2; }
+.language-panel { order: 1; }
+.mobile-lang-btn { order: 1; }
+.mobile-menu-btn { order: 3; }
 
 
 /* Луна — справа в хедере */
@@ -1198,6 +1444,91 @@ header {
     background: rgba(99, 102, 241, 0.1);
 }
 
+/* === Responsive improvements (added) === */
+/* Make images and project images responsive */
+img, picture, .project-image img, .feature-card img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Slightly tighter container padding on small screens */
+.container {
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+/* Ensure header elements wrap gracefully on medium widths */
+.nav-container {
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.nav-actions, .nav-links {
+    align-items: center;
+}
+
+/* Improve touch targets and interaction on small devices */
+button, a {
+    touch-action: manipulation;
+}
+
+button, .theme-toggle, .mobile-menu-btn, .burger-menu, .lang-btn, .contact-btn {
+    -webkit-tap-highlight-color: rgba(0,0,0,0.06);
+}
+
+/* Increase tap targets for interactive elements */
+.nav-links a, .lang-btn, .mobile-menu-btn, .theme-toggle, .burger-menu {
+    padding: 8px 10px;
+    border-radius: 10px;
+}
+
+/* Medium breakpoint improvements */
+@media (max-width: 1024px) {
+    .hero h1 {
+        font-size: 3rem;
+    }
+
+    .nav-links {
+        gap: 1.5rem;
+    }
+
+    .features-grid, .projects-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+}
+
+/* Ensure mobile menu overlays content and is easily tappable */
+.nav-links {
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Make form controls and buttons more consistent on very small screens */
+@media (max-width: 420px) {
+    .hero p, .project-content p, .feature-card p {
+        font-size: 1rem;
+    }
+
+    .hero h1 {
+        font-size: 1.7rem;
+    }
+
+    .contact-btn, .theme-toggle {
+        padding: 10px 16px;
+    }
+}
+
+/* Minor visual: ensure sticky header doesn't cover content on small screens */
+main, section {
+    scroll-margin-top: 80px;
+}
+
+/* small accessibility focus outline */
+a:focus, button:focus {
+    outline: 3px solid rgba(99,102,241,0.18);
+    outline-offset: 3px;
+}
+
 .lang-btn.active {
     background: var(--gradient);
     color: white;
@@ -1455,6 +1786,106 @@ header {
         left: 50%;
         transform: translateX(-50%);
     }
+}
+
+/* Fix overlap when viewport is narrow but still desktop-style (e.g. 769-884px) */
+@media (min-width: 769px) and (max-width: 884px) {
+    .nav-links {
+        /* stop absolute centering which can overlap actions */
+        position: static !important;
+        transform: none !important;
+        left: auto !important;
+        margin: 0 12px;
+        justify-content: center;
+        gap: 0.9rem;
+        flex-wrap: wrap;
+    }
+
+    .nav-links a {
+        padding: 6px 8px;
+        font-size: 0.95rem;
+        white-space: nowrap;
+    }
+
+    .nav-container {
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* ensure action buttons stay on the right and don't get overlapped */
+    .nav-actions {
+        margin-left: auto;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    /* slightly reduce logo size to preserve space */
+    .logo {
+        font-size: 1.5rem;
+        gap: 8px;
+    }
+
+    header {
+        padding: 1rem 0;
+    }
+}
+
+/* Tablet / narrow desktop fix (covers 885px - 940px, includes 912px) */
+@media (min-width: 885px) and (max-width: 940px) {
+    /* Avoid absolute-centering nav which can overlap actions */
+    .nav-links {
+        position: static !important;
+        transform: none !important;
+        left: auto !important;
+        margin: 0 10px;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .nav-actions {
+        margin-left: auto;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    /* Reduce hero size and add top padding so its text doesn't sit under header */
+    .hero {
+        padding-top: 6.5rem;
+        padding-bottom: 3.5rem;
+    }
+
+    .hero h1 {
+        font-size: 2.6rem;
+    }
+
+    /* Slightly reduce logo & nav spacing */
+    .logo {
+        font-size: 1.4rem;
+        gap: 10px;
+    }
+
+    /* Ensure header sits above all content */
+    header {
+        z-index: 1200;
+    }
+}
+
+/* Ensure team-pricing mask pseudo-element positions correctly */
+@media (max-width: 399px) and (max-height: 800px) {
+    .team-pricing {
+        position: relative;
+    }
+    .team-pricing::after {
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5));
+    }
+}
+
+/* Small tweak: prevent unexpected horizontal scroll due to shadows/margins */
+* {
+    -webkit-overflow-scrolling: touch;
 }
 
 /* Для очень маленьких экранов */
