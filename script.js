@@ -1,12 +1,59 @@
 document.addEventListener('DOMContentLoaded', function() {
     const mobileMenuBtn = document.getElementById('mobileMenuBtn');
     const navLinks = document.querySelector('.nav-links');
+    const mobileLangBtn = document.getElementById('mobileLangBtn');
+    const mobileLanguageDropdown = document.getElementById('mobileLanguageDropdown');
+    const dropdownOverlay = document.getElementById('dropdownOverlay');
+    const header = document.querySelector('header');
     
+    function closeNavMenu() {
+        if (!navLinks || !mobileMenuBtn) return;
+        navLinks.classList.remove('active');
+        document.body.classList.remove('menu-open');
+        mobileMenuBtn.setAttribute('aria-expanded', 'false');
+    }
+
+    function closeLanguageMenu() {
+        if (!mobileLanguageDropdown || !dropdownOverlay) return;
+        mobileLanguageDropdown.classList.remove('active');
+        dropdownOverlay.classList.remove('active');
+        document.body.classList.remove('menu-open');
+    }
+
+    function toggleNavMenu() {
+        if (!navLinks || !mobileMenuBtn) return;
+        const isOpen = navLinks.classList.contains('active');
+        if (!isOpen) {
+            closeLanguageMenu();
+        }
+        navLinks.classList.toggle('active', !isOpen);
+        document.body.classList.toggle('menu-open', !isOpen);
+        mobileMenuBtn.setAttribute('aria-expanded', String(!isOpen));
+    }
+
+    function toggleLanguageMenu() {
+        if (!mobileLanguageDropdown || !dropdownOverlay) return;
+        const isOpen = mobileLanguageDropdown.classList.contains('active');
+        if (!isOpen) {
+            closeNavMenu();
+        }
+        mobileLanguageDropdown.classList.toggle('active', !isOpen);
+        dropdownOverlay.classList.toggle('active', !isOpen);
+        document.body.classList.toggle('menu-open', !isOpen);
+    }
+
+    function updateHeaderOffset() {
+        if (!header) return;
+        const height = Math.ceil(header.getBoundingClientRect().height);
+        document.documentElement.style.setProperty('--header-offset', `${height}px`);
+    }
+
     if (mobileMenuBtn) {
-        mobileMenuBtn.addEventListener('click', function() {
-            navLinks.classList.toggle('active');
-            document.body.classList.toggle('menu-open');
+        mobileMenuBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            toggleNavMenu();
         });
+        mobileMenuBtn.setAttribute('aria-expanded', 'false');
     }
 
     // Тема сайта
@@ -58,31 +105,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     behavior: 'smooth'
                 });
                 
-                if (window.innerWidth <= 768 && navLinks) {
-                    navLinks.classList.remove('active');
-                    document.body.classList.remove('menu-open');
+                if (window.innerWidth <= 768) {
+                    closeNavMenu();
                 }
             }
         });
     });
 
     // Мобильное меню языков
-    const mobileLangBtn = document.getElementById('mobileLangBtn');
-    const mobileLanguageDropdown = document.getElementById('mobileLanguageDropdown');
-    const dropdownOverlay = document.getElementById('dropdownOverlay');
-    
-    function toggleLanguageMenu() {
-        mobileLanguageDropdown.classList.toggle('active');
-        dropdownOverlay.classList.toggle('active');
-        document.body.classList.toggle('menu-open');
-    }
-    
-    function closeLanguageMenu() {
-        mobileLanguageDropdown.classList.remove('active');
-        dropdownOverlay.classList.remove('active');
-        document.body.classList.remove('menu-open');
-    }
-    
     if (mobileLangBtn) {
         mobileLangBtn.addEventListener('click', function(e) {
             e.stopPropagation();
@@ -105,9 +135,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     document.addEventListener('click', function(e) {
-        if (mobileLanguageDropdown.classList.contains('active') &&
+        if (mobileLanguageDropdown &&
+            mobileLanguageDropdown.classList.contains('active') &&
             !mobileLanguageDropdown.contains(e.target) &&
-            !mobileLangBtn.contains(e.target)) {
+            (!mobileLangBtn || !mobileLangBtn.contains(e.target))) {
             closeLanguageMenu();
         }
     });
@@ -128,4 +159,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     updateCurrentLang();
+    updateHeaderOffset();
+
+    window.addEventListener('load', updateHeaderOffset);
+
+    window.addEventListener('resize', function() {
+        updateHeaderOffset();
+        if (window.innerWidth > 768) {
+            closeNavMenu();
+            closeLanguageMenu();
+        }
+    });
 });
