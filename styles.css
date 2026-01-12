@@ -2241,7 +2241,7 @@ body.menu-open {
   .mobile-language-dropdown {
     top: calc(var(--header-offset, 72px) + 12px);
     z-index: 1000000;
-    margin-top: 72px;
+    margin-top: 0px;
   }
 
   .dropdown-overlay {
