@@ -1088,7 +1088,7 @@ footer p {
     }
 
     /* Hide non-essential controls to free space */
-    .theme-toggle { display: none !important; }
+    /* .theme-toggle { display: none !important; } */
     .desktop-only { display: none !important; }
     .mobile-only { display: flex !important; }
 
@@ -2246,5 +2246,11 @@ body.menu-open {
 
   .dropdown-overlay {
     z-index: 1400;
+  }
+}
+
+@media (hover: none) {
+  .theme-toggle:hover {
+    transform: none;
   }
 }
