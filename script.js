@@ -336,4 +336,42 @@ document.addEventListener('DOMContentLoaded', function() {
         el.addEventListener('pointerleave', clearShimmer);
         el.addEventListener('pointercancel', clearShimmer);
     });
+
+    // Click-to-copy: email / Discord username
+    function copyToClipboard(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+            return navigator.clipboard.writeText(text);
+        }
+        // Fallback for browsers/contexts without the Clipboard API
+        return new Promise((resolve, reject) => {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                resolve();
+            } catch (err) {
+                reject(err);
+            } finally {
+                document.body.removeChild(textarea);
+            }
+        });
+    }
+
+    document.querySelectorAll('.contact-copy').forEach(btn => {
+        let resetTimer = null;
+        btn.addEventListener('click', () => {
+            const value = btn.getAttribute('data-copy');
+            if (!value) return;
+            copyToClipboard(value).then(() => {
+                clearTimeout(resetTimer);
+                btn.classList.add('copied');
+                resetTimer = setTimeout(() => btn.classList.remove('copied'), 1600);
+            }).catch(() => {});
+        });
+    });
 });

@@ -722,6 +722,7 @@ header {
     height: 400px;
     background: rgba(255, 255, 255, 0.05);
     border-radius: 50%;
+    pointer-events: none;
 }
 
 .contact::after {
@@ -733,6 +734,7 @@ header {
     height: 500px;
     background: rgba(255, 255, 255, 0.05);
     border-radius: 50%;
+    pointer-events: none;
 }
 
 .contact h2 {
@@ -818,7 +820,11 @@ footer p {
 .instagram-btn {
     background: linear-gradient(45deg, #405DE6, #5851DB, #833AB4, #C13584, #E1306C, #FD1D1D);
     color: white;
-    margin-left: 1rem;
+}
+
+.signal-btn {
+    background: #3A76F0;
+    color: white;
 }
 
 .contact-info {
@@ -827,6 +833,8 @@ footer p {
     border-radius: var(--radius);
     max-width: 500px;
     margin: 0 auto;
+    position: relative;
+    z-index: 1;
 }
 
 .contact-info p {
@@ -839,6 +847,81 @@ footer p {
 
 .contact-info p:last-child {
     margin-bottom: 0;
+}
+
+/* Click-to-copy rows (email, Discord) */
+.contact-copy {
+    width: 100%;
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: none;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 10px;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    position: relative;
+    transition: var(--transition), transform 0.15s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.contact-copy:last-of-type {
+    margin-bottom: 0.8rem;
+}
+
+.contact-copy:hover,
+.contact-copy:focus-visible {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.contact-copy:active {
+    transform: scale(0.97);
+}
+
+.contact-copy .copy-icon {
+    font-size: 0.85rem;
+    opacity: 0.55;
+    transition: var(--transition);
+}
+
+.contact-copy:hover .copy-icon {
+    opacity: 0.9;
+}
+
+.contact-copy.copied .copy-icon {
+    opacity: 1;
+    color: #4ade80;
+}
+
+.contact-copy .copy-tooltip {
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translate(-50%, -6px);
+    background: rgba(15, 23, 42, 0.92);
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 8px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.contact-copy.copied .copy-tooltip {
+    opacity: 1;
+    transform: translate(-50%, -100%);
+}
+
+@media (hover: none) {
+    .contact-copy:active {
+        background: rgba(255, 255, 255, 0.14);
+    }
 }
 
 /* Footer Links */
