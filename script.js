@@ -170,4 +170,158 @@ document.addEventListener('DOMContentLoaded', function() {
             closeLanguageMenu();
         }
     });
+
+    // ===== Apple-style scroll interactivity =====
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const hero = document.querySelector('.hero');
+    let ticking = false;
+
+    function onScrollFrame() {
+        const y = window.scrollY || window.pageYOffset;
+
+        if (header) {
+            header.classList.toggle('scrolled', y > 8);
+        }
+
+        if (hero && !prefersReducedMotion) {
+            hero.style.setProperty('--scrollY', Math.min(y, 800));
+        }
+
+        ticking = false;
+    }
+
+    function onScroll() {
+        if (!ticking) {
+            requestAnimationFrame(onScrollFrame);
+            ticking = true;
+        }
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScrollFrame();
+
+    // Reveal-on-scroll: fade + rise elements into view as they're reached
+    const revealTargets = document.querySelectorAll(
+        '.feature-card, .project-card, .team-member, .price-item, .stat'
+    );
+
+    if (revealTargets.length) {
+        revealTargets.forEach((el, i) => {
+            el.classList.add('reveal');
+            el.style.transitionDelay = prefersReducedMotion ? '0ms' : `${(i % 4) * 70}ms`;
+        });
+
+        if ('IntersectionObserver' in window && !prefersReducedMotion) {
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('in-view');
+                        revealObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+            revealTargets.forEach(el => revealObserver.observe(el));
+        } else {
+            revealTargets.forEach(el => el.classList.add('in-view'));
+        }
+    }
+
+    // Animated stat counters (e.g. "1000+" counts up from 0)
+    document.querySelectorAll('.stat-number').forEach(el => {
+        const raw = el.textContent.trim();
+        const match = raw.match(/^(\d+)([+%]?)$/);
+        if (!match || prefersReducedMotion) return;
+
+        const target = parseInt(match[1], 10);
+        const suffix = match[2] || '';
+        let counted = false;
+
+        const countObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !counted) {
+                    counted = true;
+                    const duration = 900;
+                    const start = performance.now();
+
+                    function tick(now) {
+                        const progress = Math.min((now - start) / duration, 1);
+                        const eased = 1 - Math.pow(1 - progress, 3);
+                        el.textContent = Math.round(eased * target) + suffix;
+                        if (progress < 1) {
+                            requestAnimationFrame(tick);
+                        } else {
+                            el.textContent = target + suffix;
+                        }
+                    }
+
+                    requestAnimationFrame(tick);
+                    countObserver.unobserve(el);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        countObserver.observe(el);
+    });
+
+    // Active nav link follows the section currently in view
+    const navAnchorLinks = Array.from(document.querySelectorAll('.nav-links a[href^="#"]'));
+    const sections = navAnchorLinks
+        .map(link => document.querySelector(link.getAttribute('href')))
+        .filter(Boolean);
+
+    if (sections.length && 'IntersectionObserver' in window) {
+        const sectionObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = `#${entry.target.id}`;
+                    navAnchorLinks.forEach(link => {
+                        link.classList.toggle('active', link.getAttribute('href') === id);
+                    });
+                }
+            });
+        }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+
+        sections.forEach(section => sectionObserver.observe(section));
+    }
+
+    // Subtle pointer-driven tilt on feature/project cards (mouse & trackpad only)
+    if (window.matchMedia('(hover: hover) and (pointer: fine)').matches && !prefersReducedMotion) {
+        document.querySelectorAll('.feature-card, .project-card').forEach(card => {
+            card.addEventListener('mouseenter', () => card.classList.add('tilt'));
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const px = (e.clientX - rect.left) / rect.width - 0.5;
+                const py = (e.clientY - rect.top) / rect.height - 0.5;
+                card.style.setProperty('--tilt-y', `${px * 6}deg`);
+                card.style.setProperty('--tilt-x', `${py * -6}deg`);
+            });
+            card.addEventListener('mouseleave', () => {
+                card.classList.remove('tilt');
+                card.style.setProperty('--tilt-x', '0deg');
+                card.style.setProperty('--tilt-y', '0deg');
+            });
+        });
+    }
+
+    // Liquid Glass shimmer — the highlight tracks the touch/press point,
+    // mirroring glassEffect(.interactive()) on iOS 26's floating controls
+    document.querySelectorAll('.theme-toggle, .mobile-menu-btn, .mobile-lang-btn').forEach(el => {
+        function setShimmer(e) {
+            const rect = el.getBoundingClientRect();
+            const point = e.touches ? e.touches[0] : e;
+            const x = ((point.clientX - rect.left) / rect.width) * 100;
+            const y = ((point.clientY - rect.top) / rect.height) * 100;
+            el.style.setProperty('--tx', `${x}%`);
+            el.style.setProperty('--ty', `${y}%`);
+            el.classList.add('glass-touch');
+        }
+        function clearShimmer() {
+            el.classList.remove('glass-touch');
+        }
+        el.addEventListener('pointerdown', setShimmer);
+        el.addEventListener('pointerup', clearShimmer);
+        el.addEventListener('pointerleave', clearShimmer);
+        el.addEventListener('pointercancel', clearShimmer);
+    });
 });

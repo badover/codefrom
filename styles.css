@@ -255,6 +255,8 @@ header {
     opacity: 0.05;
     border-radius: 50%;
     z-index: -1;
+    transform: translateY(calc(var(--scrollY, 0) * 0.12px));
+    transition: transform 0.1s linear;
 }
 
 .hero::after {
@@ -268,6 +270,8 @@ header {
     opacity: 0.05;
     border-radius: 50%;
     z-index: -1;
+    transform: translateY(calc(var(--scrollY, 0) * -0.08px));
+    transition: transform 0.1s linear;
 }
 
 .tagline {
@@ -1254,7 +1258,7 @@ footer p {
 }
 
 .feature-card, .project-card, .team-member, .price-item {
-    animation: fadeIn 0.6s ease forwards;
+    /* Reveal-on-scroll now handles entrance motion — see .reveal below */
 }
 
 /* === FIX THEME TOGGLE POSITION === */
@@ -2342,4 +2346,269 @@ body.menu-open {
   .theme-toggle:hover {
     transform: none;
   }
+}
+
+/* ============================================================
+   Apple-style motion & interactivity
+   ============================================================ */
+
+a, button {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Sticky header: gains contrast and shrinks slightly as the page scrolls */
+header {
+    transition: padding-top 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+                padding-bottom 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+                background-color 0.4s ease,
+                box-shadow 0.4s ease;
+}
+
+header.scrolled {
+    padding-top: calc(0.65rem + env(safe-area-inset-top));
+    padding-bottom: 0.65rem;
+    background-color: color-mix(in srgb, var(--bg-primary) 88%, transparent);
+    box-shadow: 0 1px 0 color-mix(in srgb, var(--border-color) 90%, transparent),
+                0 16px 32px -20px rgba(15, 23, 42, 0.28);
+}
+
+[data-theme="dark"] header.scrolled {
+    background-color: color-mix(in srgb, var(--bg-primary) 90%, transparent);
+    box-shadow: 0 1px 0 color-mix(in srgb, var(--border-color) 80%, transparent),
+                0 16px 32px -18px rgba(0, 0, 0, 0.5);
+}
+
+.logo-icon,
+.mobile-menu-btn,
+.theme-toggle {
+    transition: var(--transition), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+header.scrolled .logo-icon {
+    transform: scale(0.92);
+}
+
+/* Active section indicator in the nav */
+.nav-links a.active {
+    color: var(--primary);
+}
+
+.nav-links a.active::after {
+    width: 100%;
+}
+
+/* Scroll reveal — sections rise and fade in as they enter the viewport */
+.reveal {
+    opacity: 0;
+    transform: translateY(28px) scale(0.98);
+    transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
+}
+
+.reveal.in-view {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.stat-number {
+    font-variant-numeric: tabular-nums;
+}
+
+/* Subtle pointer-driven tilt for cards on devices with a precise pointer (mouse/trackpad) */
+@media (hover: hover) and (pointer: fine) {
+    .feature-card,
+    .project-card {
+        transform-style: preserve-3d;
+        perspective: 800px;
+    }
+
+    .feature-card.tilt,
+    .project-card.tilt {
+        transform: translateY(-6px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+    }
+}
+
+/* Tactile press feedback for touch — mirrors iOS "spring down" since :hover never fires on touch */
+@media (hover: none) {
+    .feature-card,
+    .project-card,
+    .team-member {
+        transition: var(--transition), transform 0.15s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .feature-card:active,
+    .project-card:active,
+    .team-member:active {
+        transform: scale(0.97);
+    }
+
+    .contact-btn,
+    .project-link,
+    .github-link,
+    .lang-btn,
+    .mobile-lang-btn,
+    .theme-toggle,
+    .mobile-menu-btn,
+    .dropdown-lang-option,
+    .burger-menu {
+        transition: var(--transition), transform 0.15s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.15s ease;
+    }
+
+    .contact-btn:active,
+    .theme-toggle:active,
+    .mobile-menu-btn:active,
+    .lang-btn:active,
+    .mobile-lang-btn:active,
+    .dropdown-lang-option:active,
+    .burger-menu:active {
+        transform: scale(0.94);
+        opacity: 0.85;
+    }
+
+    .project-link:active,
+    .github-link:active {
+        opacity: 0.6;
+    }
+
+    .logo:active .logo-icon {
+        transform: scale(0.9);
+    }
+}
+
+/* ============================================================
+   iOS 26 "Liquid Glass" — mobile navigation layer
+   Glass is reserved for nav/floating chrome (bar, controls,
+   sheets) — content cards stay opaque, per Apple's own rule
+   that glass never sits on the content layer.
+   ============================================================ */
+@media (max-width: 768px) {
+    :root {
+        --glass-bg: rgba(255, 255, 255, 0.55);
+        --glass-bg-strong: rgba(255, 255, 255, 0.78);
+        --glass-border: rgba(255, 255, 255, 0.65);
+        --glass-highlight: rgba(255, 255, 255, 0.85);
+        --glass-shadow: 0 10px 34px -14px rgba(15, 23, 42, 0.35);
+    }
+
+    [data-theme="dark"] {
+        --glass-bg: rgba(17, 22, 38, 0.5);
+        --glass-bg-strong: rgba(17, 22, 38, 0.78);
+        --glass-border: rgba(255, 255, 255, 0.14);
+        --glass-highlight: rgba(255, 255, 255, 0.12);
+        --glass-shadow: 0 14px 38px -14px rgba(0, 0, 0, 0.6);
+    }
+
+    /* --- The nav bar itself: a true glass surface --- */
+    header {
+        background: var(--glass-bg);
+        backdrop-filter: saturate(220%) blur(28px);
+        -webkit-backdrop-filter: saturate(220%) blur(28px);
+        border-bottom: 1px solid var(--glass-border);
+        box-shadow: inset 0 1px 0 var(--glass-highlight);
+    }
+
+    header.scrolled {
+        background: var(--glass-bg-strong);
+        box-shadow: inset 0 1px 0 var(--glass-highlight), var(--glass-shadow);
+    }
+
+    /* --- Floating glass controls: theme toggle, burger, language pill --- */
+    .theme-toggle,
+    .mobile-menu-btn,
+    .mobile-lang-btn {
+        position: relative;
+        background: var(--glass-bg-strong);
+        backdrop-filter: saturate(200%) blur(20px);
+        -webkit-backdrop-filter: saturate(200%) blur(20px);
+        border: 1px solid var(--glass-border);
+        box-shadow: inset 0 1px 0 var(--glass-highlight), 0 6px 16px -8px rgba(15, 23, 42, 0.25);
+        overflow: hidden;
+        isolation: isolate;
+    }
+
+    /* Shimmer that follows the touch point — mirrors glassEffect(.interactive()) */
+    .theme-toggle::after,
+    .mobile-menu-btn::after,
+    .mobile-lang-btn::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        background: radial-gradient(90px circle at var(--tx, 50%) var(--ty, 50%),
+            rgba(255, 255, 255, 0.6), transparent 60%);
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        pointer-events: none;
+    }
+
+    [data-theme="dark"] .theme-toggle::after,
+    [data-theme="dark"] .mobile-menu-btn::after,
+    [data-theme="dark"] .mobile-lang-btn::after {
+        background: radial-gradient(90px circle at var(--tx, 50%) var(--ty, 50%),
+            rgba(255, 255, 255, 0.22), transparent 60%);
+    }
+
+    .theme-toggle.glass-touch::after,
+    .mobile-menu-btn.glass-touch::after,
+    .mobile-lang-btn.glass-touch::after {
+        opacity: 1;
+    }
+
+    .theme-toggle:active,
+    .mobile-menu-btn:active,
+    .mobile-lang-btn:active {
+        transform: scale(0.9);
+    }
+
+    /* --- Floating glass sheets: the nav menu & language dropdown --- */
+    .nav-links {
+        background: var(--glass-bg-strong);
+        backdrop-filter: saturate(200%) blur(30px);
+        -webkit-backdrop-filter: saturate(200%) blur(30px);
+        border: 1px solid var(--glass-border);
+        box-shadow: inset 0 1px 0 var(--glass-highlight), var(--glass-shadow);
+    }
+
+    .mobile-language-dropdown {
+        background: var(--glass-bg-strong);
+        backdrop-filter: saturate(200%) blur(30px);
+        -webkit-backdrop-filter: saturate(200%) blur(30px);
+        border: 1px solid var(--glass-border);
+        box-shadow: inset 0 1px 0 var(--glass-highlight), var(--glass-shadow);
+    }
+
+    .dropdown-header {
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    /* Dimming layer behind the glass sheet — pairs with it, isn't glass itself */
+    .dropdown-overlay.active {
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    .reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+
+    .hero::before,
+    .hero::after {
+        transform: none !important;
+    }
+
+    * {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+    }
 }
