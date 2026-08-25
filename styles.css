@@ -256,7 +256,7 @@ header {
     border-radius: 50%;
     z-index: -1;
     transform: translateY(calc(var(--scrollY, 0) * 0.12px));
-    transition: transform 0.1s linear;
+    will-change: transform;
 }
 
 .hero::after {
@@ -271,7 +271,7 @@ header {
     border-radius: 50%;
     z-index: -1;
     transform: translateY(calc(var(--scrollY, 0) * -0.08px));
-    transition: transform 0.1s linear;
+    will-change: transform;
 }
 
 .tagline {
@@ -2356,11 +2356,12 @@ a, button {
     -webkit-tap-highlight-color: transparent;
 }
 
-/* Sticky header: gains contrast and shrinks slightly as the page scrolls */
+/* Sticky header: gains contrast and shrinks slightly as the page scrolls.
+   Padding is intentionally NOT transitioned — animating it triggers layout
+   reflow on every frame, which is what made scrolling feel torn/laggy on
+   mobile. background-color/box-shadow are paint-only, so those stay eased. */
 header {
-    transition: padding-top 0.4s cubic-bezier(0.22, 1, 0.36, 1),
-                padding-bottom 0.4s cubic-bezier(0.22, 1, 0.36, 1),
-                background-color 0.4s ease,
+    transition: background-color 0.4s ease,
                 box-shadow 0.4s ease;
 }
 
@@ -2397,12 +2398,19 @@ header.scrolled .logo-icon {
     width: 100%;
 }
 
-/* Scroll reveal — sections rise and fade in as they enter the viewport */
+/* Scroll reveal — sections rise and fade in as they enter the viewport.
+   will-change is dropped once revealed so finished cards don't sit on their
+   own compositor layer for the rest of the page's life — with a dozen-plus
+   cards on the page, keeping them all promoted is what was bogging scroll
+   down on weaker phones. */
 .reveal {
     opacity: 0;
     transform: translateY(28px) scale(0.98);
     transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
                 transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal:not(.in-view) {
     will-change: opacity, transform;
 }
 
@@ -2586,6 +2594,23 @@ header.scrolled .logo-icon {
     .dropdown-overlay.active {
         backdrop-filter: blur(4px);
         -webkit-backdrop-filter: blur(4px);
+    }
+
+    /* Language sheet: drops in just below the header instead of overlapping
+       it. An older leftover rule had it vertically re-centering itself via
+       translate(-50%, -50%) on open, which pulled it up over the header/nav
+       buttons — this replaces that with a straightforward slide-down. */
+    .mobile-language-dropdown {
+        top: calc(var(--header-offset, 72px) + 14px);
+        left: 50%;
+        transform: translate(-50%, -14px) scale(0.96);
+        transition: opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+                    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+                    visibility 0.3s;
+    }
+
+    .mobile-language-dropdown.active {
+        transform: translate(-50%, 0) scale(1);
     }
 }
 

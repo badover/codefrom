@@ -174,17 +174,29 @@ document.addEventListener('DOMContentLoaded', function() {
     // ===== Apple-style scroll interactivity =====
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const hero = document.querySelector('.hero');
+    const heroParallaxRange = hero ? hero.offsetHeight + 200 : 0;
     let ticking = false;
+    let wasScrolled = null;
+    let lastHeroY = null;
 
     function onScrollFrame() {
         const y = window.scrollY || window.pageYOffset;
 
-        if (header) {
-            header.classList.toggle('scrolled', y > 8);
+        // Only touch the DOM when a value actually changed — avoids pointless
+        // style writes on every single scroll frame, which is what was making
+        // mobile scrolling feel torn/laggy.
+        const isScrolled = y > 8;
+        if (header && isScrolled !== wasScrolled) {
+            header.classList.toggle('scrolled', isScrolled);
+            wasScrolled = isScrolled;
         }
 
-        if (hero && !prefersReducedMotion) {
-            hero.style.setProperty('--scrollY', Math.min(y, 800));
+        if (hero && !prefersReducedMotion && y <= heroParallaxRange) {
+            const clamped = Math.min(y, 800);
+            if (clamped !== lastHeroY) {
+                hero.style.setProperty('--scrollY', clamped);
+                lastHeroY = clamped;
+            }
         }
 
         ticking = false;
