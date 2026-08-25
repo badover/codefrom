@@ -374,4 +374,25 @@ document.addEventListener('DOMContentLoaded', function() {
             }).catch(() => {});
         });
     });
+
+    // Fix "stuck pressed" buttons on mobile: tapping a target="_blank" link
+    // (Signal, Telegram, Instagram...) hands off to another app/tab, which
+    // interrupts the touch sequence — WebKit/Chrome can leave the :active
+    // style applied to that link indefinitely. When the page is restored
+    // (bfcache pageshow, or the tab regaining visibility), clear focus and
+    // force a pointer-events reflow so the browser drops the stuck state.
+    function unstickPressedState() {
+        if (document.activeElement && document.activeElement !== document.body && typeof document.activeElement.blur === 'function') {
+            document.activeElement.blur();
+        }
+        document.body.style.pointerEvents = 'none';
+        requestAnimationFrame(() => {
+            document.body.style.pointerEvents = '';
+        });
+    }
+
+    window.addEventListener('pageshow', unstickPressedState);
+    document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'visible') unstickPressedState();
+    });
 });
