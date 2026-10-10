@@ -830,7 +830,7 @@ footer p {
 
 .contact-info {
     background: rgba(255, 255, 255, 0.1);
-    padding: 1.5rem;
+    padding: 0.75rem 1rem;
     border-radius: var(--radius);
     width: fit-content;
     max-width: 100%;
@@ -853,8 +853,9 @@ footer p {
 
 /* Click-to-copy email row */
 .contact-copy {
-    width: 100%;
-    margin-bottom: 0.8rem;
+    width: auto;
+    max-width: 100%;
+    margin-bottom: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -871,7 +872,7 @@ footer p {
 }
 
 .contact-copy:last-of-type {
-    margin-bottom: 0.8rem;
+    margin-bottom: 0;
 }
 
 .contact-copy:hover,
@@ -2432,6 +2433,16 @@ header.scrolled .logo-icon {
                 transform 0.45s ease-out;
 }
 
+.feature-card.reveal,
+.project-card.reveal,
+.team-member.reveal {
+    transition: opacity 0.45s ease-out,
+                transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+                border-color 0.35s ease,
+                background-color 0.35s ease;
+}
+
 .reveal:not(.in-view) {
     will-change: opacity, transform;
 }
@@ -2694,8 +2705,9 @@ header.scrolled .logo-icon {
     }
 
     .contact-info {
-        width: min(100%, 420px);
-        padding: 1rem;
+        width: fit-content;
+        max-width: 100%;
+        padding: 0.75rem 1rem;
     }
 }
 
