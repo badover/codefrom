@@ -48,6 +48,81 @@ document.addEventListener('DOMContentLoaded', function() {
         document.documentElement.style.setProperty('--header-offset', `${height}px`);
     }
 
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let smoothScrollFrame = 0;
+    let restoreScrollBehavior = null;
+
+    function cancelSmoothScroll() {
+        if (!smoothScrollFrame) return;
+        cancelAnimationFrame(smoothScrollFrame);
+        smoothScrollFrame = 0;
+        if (restoreScrollBehavior) {
+            restoreScrollBehavior();
+            restoreScrollBehavior = null;
+        }
+    }
+
+    function scrollToSection(target) {
+        cancelSmoothScroll();
+        if (prefersReducedMotion) {
+            target.scrollIntoView({ behavior: 'auto', block: 'start' });
+            return;
+        }
+
+        const root = document.documentElement;
+        const previousScrollBehavior = root.style.scrollBehavior;
+        root.style.scrollBehavior = 'auto';
+        restoreScrollBehavior = () => {
+            root.style.scrollBehavior = previousScrollBehavior;
+        };
+
+        const scrollMargin = parseFloat(getComputedStyle(target).scrollMarginTop) || 0;
+        const maxScroll = root.scrollHeight - window.innerHeight;
+        const startY = window.scrollY;
+        const targetY = Math.max(0, Math.min(
+            maxScroll,
+            startY + target.getBoundingClientRect().top - scrollMargin
+        ));
+        const distance = targetY - startY;
+
+        if (Math.abs(distance) < 1) {
+            root.style.scrollBehavior = previousScrollBehavior;
+            restoreScrollBehavior = null;
+            return;
+        }
+
+        const duration = Math.min(1500, Math.max(380, Math.abs(distance) * 0.5));
+        let startTime = null;
+
+        function animateScroll(timestamp) {
+            if (startTime === null) startTime = timestamp;
+            const progress = Math.min((timestamp - startTime) / duration, 1);
+            const easedProgress = 1 - Math.pow(1 - progress, 4);
+            window.scrollTo(0, startY + distance * easedProgress);
+
+            if (progress < 1) {
+                smoothScrollFrame = requestAnimationFrame(animateScroll);
+            } else {
+                smoothScrollFrame = 0;
+                if (restoreScrollBehavior) {
+                    restoreScrollBehavior();
+                    restoreScrollBehavior = null;
+                }
+            }
+        }
+
+        smoothScrollFrame = requestAnimationFrame(animateScroll);
+    }
+
+    window.addEventListener('wheel', cancelSmoothScroll, { passive: true });
+    window.addEventListener('touchstart', cancelSmoothScroll, { passive: true });
+    window.addEventListener('pointerdown', cancelSmoothScroll, { passive: true });
+    window.addEventListener('keydown', function(e) {
+        if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' '].includes(e.key)) {
+            cancelSmoothScroll();
+        }
+    });
+
     if (mobileMenuBtn) {
         mobileMenuBtn.addEventListener('click', function(e) {
             e.stopPropagation();
@@ -100,10 +175,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const targetElement = document.querySelector(targetId);
             if (targetElement) {
                 e.preventDefault();
-                window.scrollTo({
-                    top: targetElement.offsetTop - 80,
-                    behavior: 'smooth'
-                });
+                scrollToSection(targetElement);
                 
                 if (window.innerWidth <= 768) {
                     closeNavMenu();
@@ -172,7 +244,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // ===== Apple-style scroll interactivity =====
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const hero = document.querySelector('.hero');
     const heroParallaxRange = hero ? hero.offsetHeight + 200 : 0;
     let ticking = false;
@@ -220,7 +291,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (revealTargets.length) {
         revealTargets.forEach((el, i) => {
             el.classList.add('reveal');
-            el.style.transitionDelay = prefersReducedMotion ? '0ms' : `${(i % 4) * 70}ms`;
+            el.style.transitionDelay = prefersReducedMotion ? '0ms' : `${(i % 3) * 35}ms`;
         });
 
         if ('IntersectionObserver' in window && !prefersReducedMotion) {
@@ -231,7 +302,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         revealObserver.unobserve(entry.target);
                     }
                 });
-            }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+            }, { threshold: 0, rootMargin: '0px 0px 15% 0px' });
 
             revealTargets.forEach(el => revealObserver.observe(el));
         } else {
@@ -337,7 +408,7 @@ document.addEventListener('DOMContentLoaded', function() {
         el.addEventListener('pointercancel', clearShimmer);
     });
 
-    // Click-to-copy: email / Discord username
+    // Click-to-copy: email address
     function copyToClipboard(text) {
         if (navigator.clipboard && window.isSecureContext) {
             return navigator.clipboard.writeText(text);
@@ -376,7 +447,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Fix "stuck pressed" buttons on mobile: tapping a target="_blank" link
-    // (Signal, Telegram, Instagram...) hands off to another app/tab, which
+    // hands off to another app/tab, which
     // interrupts the touch sequence — WebKit/Chrome can leave the :active
     // style applied to that link indefinitely. When the page is restored
     // (bfcache pageshow, or the tab regaining visibility), clear focus and
