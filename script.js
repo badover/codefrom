@@ -51,8 +51,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let smoothScrollFrame = 0;
     let restoreScrollBehavior = null;
+    let smoothScrollTarget = null;
 
     function cancelSmoothScroll() {
+        smoothScrollTarget = null;
         if (!smoothScrollFrame) return;
         cancelAnimationFrame(smoothScrollFrame);
         smoothScrollFrame = 0;
@@ -64,8 +66,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function scrollToSection(target) {
         cancelSmoothScroll();
+        smoothScrollTarget = target.id;
+        activateNavLinks(`#${target.id}`);
         if (prefersReducedMotion) {
             target.scrollIntoView({ behavior: 'auto', block: 'start' });
+            smoothScrollTarget = null;
             return;
         }
 
@@ -88,6 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (Math.abs(distance) < 1) {
             root.style.scrollBehavior = previousScrollBehavior;
             restoreScrollBehavior = null;
+            smoothScrollTarget = null;
             return;
         }
 
@@ -108,6 +114,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     restoreScrollBehavior();
                     restoreScrollBehavior = null;
                 }
+                activateNavLinks(`#${target.id}`);
+                smoothScrollTarget = null;
             }
         }
 
@@ -391,7 +399,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (sections.length && 'IntersectionObserver' in window) {
         const sectionObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                if (entry.isIntersecting) {
+                if (entry.isIntersecting && (!smoothScrollTarget || entry.target.id === smoothScrollTarget)) {
                     const id = `#${entry.target.id}`;
                     activateNavLinks(id);
                 }
