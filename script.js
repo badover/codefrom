@@ -131,7 +131,6 @@ document.addEventListener('DOMContentLoaded', function() {
         mobileMenuBtn.setAttribute('aria-expanded', 'false');
     }
 
-    // Тема сайта
     const themeToggle = document.getElementById('themeToggle');
     const themeIconMoon = themeToggle?.querySelector('.fa-moon');
     const themeIconSun = themeToggle?.querySelector('.fa-sun');
@@ -166,7 +165,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 300);
     });
 
-    // Плавная прокрутка
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
             const targetId = this.getAttribute('href');
@@ -184,7 +182,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Мобильное меню языков
     if (mobileLangBtn) {
         mobileLangBtn.addEventListener('click', function(e) {
             e.stopPropagation();
@@ -243,7 +240,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // ===== Apple-style scroll interactivity =====
     const hero = document.querySelector('.hero');
     const heroParallaxRange = hero ? hero.offsetHeight + 200 : 0;
     let ticking = false;
@@ -253,9 +249,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function onScrollFrame() {
         const y = window.scrollY || window.pageYOffset;
 
-        // Only touch the DOM when a value actually changed — avoids pointless
-        // style writes on every single scroll frame, which is what was making
-        // mobile scrolling feel torn/laggy.
         const isScrolled = y > 8;
         if (header && isScrolled !== wasScrolled) {
             header.classList.toggle('scrolled', isScrolled);
@@ -283,7 +276,6 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('scroll', onScroll, { passive: true });
     onScrollFrame();
 
-    // Reveal-on-scroll: fade + rise elements into view as they're reached
     const revealTargets = document.querySelectorAll(
         '.feature-card, .project-card, .team-member, .price-item, .stat'
     );
@@ -310,7 +302,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Animated stat counters (e.g. "1000+" counts up from 0)
     document.querySelectorAll('.stat-number').forEach(el => {
         const raw = el.textContent.trim();
         const match = raw.match(/^(\d+)([+%]?)$/);
@@ -347,20 +338,62 @@ document.addEventListener('DOMContentLoaded', function() {
         countObserver.observe(el);
     });
 
-    // Active nav link follows the section currently in view
-    const navAnchorLinks = Array.from(document.querySelectorAll('.nav-links a[href^="#"]'));
-    const sections = navAnchorLinks
+    const navAnchorLinks = Array.from(document.querySelectorAll('.nav-links a[href^="#"], .mobile-tab[href^="#"]'));
+    const sections = [...new Set(navAnchorLinks
         .map(link => document.querySelector(link.getAttribute('href')))
-        .filter(Boolean);
+        .filter(Boolean))];
+    const mobileTabbar = document.querySelector('.mobile-tabbar');
+    const mobileTabs = mobileTabbar
+        ? Array.from(mobileTabbar.querySelectorAll('a[href^="#"]'))
+        : [];
+    const mobileTabIndicator = mobileTabbar?.querySelector('.mobile-tab-indicator');
+    let activeMobileTab = null;
+
+    function updateMobileTabIndicator(tab) {
+        if (!mobileTabbar || !mobileTabIndicator || !tab || tab === activeMobileTab) return;
+
+        activeMobileTab = tab;
+        const indicatorWidth = Math.min(tab.offsetWidth + 8, mobileTabbar.clientWidth - 8);
+        const indicatorLeft = Math.max(4, Math.min(
+            mobileTabbar.clientWidth - indicatorWidth - 4,
+            tab.offsetLeft - (indicatorWidth - tab.offsetWidth) / 2
+        ));
+        mobileTabIndicator.style.width = `${indicatorWidth}px`;
+        mobileTabIndicator.style.height = `${tab.offsetHeight}px`;
+        mobileTabIndicator.style.transform = `translate3d(${indicatorLeft}px, ${tab.offsetTop}px, 0)`;
+        mobileTabbar.classList.add('has-active-tab');
+    }
+
+    function activateNavLinks(id) {
+        navAnchorLinks.forEach(link => {
+            const activeId = link.closest('.mobile-tabbar') && id === '#about' ? '#hero' : id;
+            const isActive = link.getAttribute('href') === activeId;
+            link.classList.toggle('active', isActive);
+            if (isActive) {
+                link.setAttribute('aria-current', 'location');
+            } else {
+                link.removeAttribute('aria-current');
+            }
+        });
+        const mobileId = id === '#about' ? '#hero' : id;
+        updateMobileTabIndicator(mobileTabs.find(tab => tab.getAttribute('href') === mobileId));
+    }
+
+    if (mobileTabs.length) {
+        const initialTab = mobileTabs.find(tab => tab.getAttribute('href') === window.location.hash) || mobileTabs[0];
+        activateNavLinks(initialTab.getAttribute('href'));
+        window.addEventListener('resize', () => {
+            activeMobileTab = null;
+            updateMobileTabIndicator(mobileTabs.find(tab => tab.classList.contains('active')));
+        });
+    }
 
     if (sections.length && 'IntersectionObserver' in window) {
         const sectionObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const id = `#${entry.target.id}`;
-                    navAnchorLinks.forEach(link => {
-                        link.classList.toggle('active', link.getAttribute('href') === id);
-                    });
+                    activateNavLinks(id);
                 }
             });
         }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
@@ -368,7 +401,6 @@ document.addEventListener('DOMContentLoaded', function() {
         sections.forEach(section => sectionObserver.observe(section));
     }
 
-    // Subtle pointer-driven tilt on feature/project cards (mouse & trackpad only)
     if (window.matchMedia('(hover: hover) and (pointer: fine)').matches && !prefersReducedMotion) {
         document.querySelectorAll('.feature-card, .project-card').forEach(card => {
             card.addEventListener('mouseenter', () => card.classList.add('tilt'));
@@ -387,9 +419,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Liquid Glass shimmer — the highlight tracks the touch/press point,
-    // mirroring glassEffect(.interactive()) on iOS 26's floating controls
-    document.querySelectorAll('.theme-toggle, .mobile-menu-btn, .mobile-lang-btn').forEach(el => {
+    document.querySelectorAll('.theme-toggle, .mobile-menu-btn, .mobile-lang-btn, .mobile-tab').forEach(el => {
         function setShimmer(e) {
             const rect = el.getBoundingClientRect();
             const point = e.touches ? e.touches[0] : e;
@@ -408,12 +438,10 @@ document.addEventListener('DOMContentLoaded', function() {
         el.addEventListener('pointercancel', clearShimmer);
     });
 
-    // Click-to-copy: email address
     function copyToClipboard(text) {
         if (navigator.clipboard && window.isSecureContext) {
             return navigator.clipboard.writeText(text);
         }
-        // Fallback for browsers/contexts without the Clipboard API
         return new Promise((resolve, reject) => {
             const textarea = document.createElement('textarea');
             textarea.value = text;
@@ -446,12 +474,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Fix "stuck pressed" buttons on mobile: tapping a target="_blank" link
-    // hands off to another app/tab, which
-    // interrupts the touch sequence — WebKit/Chrome can leave the :active
-    // style applied to that link indefinitely. When the page is restored
-    // (bfcache pageshow, or the tab regaining visibility), clear focus and
-    // force a pointer-events reflow so the browser drops the stuck state.
     function unstickPressedState() {
         if (document.activeElement && document.activeElement !== document.body && typeof document.activeElement.blur === 'function') {
             document.activeElement.blur();
