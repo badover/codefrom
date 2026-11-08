@@ -135,7 +135,7 @@ header {
     align-items: center;
     gap: 12px;
     font-weight: 700;
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     color: var(--primary);
     text-decoration: none;
     cursor: pointer;
@@ -156,14 +156,14 @@ header {
 
 .logo-icon {
     background: var(--gradient);
-    width: 42px;
-    height: 42px;
+    width: 36px;
+    height: 36px;
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    font-size: 1.2rem;
+    font-size: 1rem;
     transition: var(--transition);
     box-shadow: 0 4px 14px color-mix(in srgb, var(--primary) 35%, transparent);
 }
@@ -207,8 +207,8 @@ header {
 }
 
 .theme-toggle {
-    width: 42px;
-    height: 42px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     background: var(--bg-secondary);
     border: 1px solid var(--border-color);
@@ -334,7 +334,7 @@ header {
 }
 
 .hero p {
-    font-size: 1.2rem;
+    font-size: 1rem;
     color: var(--text-secondary);
     max-width: 720px;
     margin: 0 auto 3rem;
@@ -654,7 +654,7 @@ header {
     color: #ef4444;
     text-decoration: line-through;
     margin-right: 12px;
-    font-size: 1.8rem;
+    font-size: 1.5rem;
 }
 
 .price-note {
@@ -707,7 +707,7 @@ header {
     max-width: 700px;
     margin: 0 auto 3rem;
     opacity: 0.9;
-    font-size: 1.2rem;
+    font-size: 1rem;
     position: relative;
     z-index: 1;
 }
@@ -1502,7 +1502,7 @@ header {
 }
 
 .flag {
-    font-size: 1.2rem;
+    font-size: 1rem;
     width: 24px;
     text-align: center;
 }
@@ -1755,7 +1755,7 @@ a:focus, button:focus {
     border: none;
     color: var(--text-secondary);
     cursor: pointer;
-    font-size: 1.2rem;
+    font-size: 1rem;
     width: 36px;
     height: 36px;
     display: flex;
@@ -2146,7 +2146,7 @@ body.menu-open {
   }
 
   .hero h1 {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
   }
   .dropdown-content {
     padding: 0;
@@ -2227,7 +2227,7 @@ body.menu-open {
 
   .lang-btn {
     padding: 6px 8px;
-    min-width: 42px;
+    min-width: 36px;
     font-size: 0.8rem;
   }
 
@@ -2319,9 +2319,6 @@ header.scrolled {
     transition: var(--transition), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-header.scrolled .logo-icon {
-    transform: scale(0.92);
-}
 
 .nav-links a.active {
     color: var(--primary);
@@ -3218,7 +3215,7 @@ header.scrolled .logo-icon {
     }
 
     .logo span {
-        font-size: 1.2rem;
+        font-size: 1rem;
     }
 }
 
