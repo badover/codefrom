@@ -43,11 +43,29 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function scrollToTarget(targetEl) {
         if (!targetEl) return;
-        try {
-            targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        } catch (err) {
-            const top = targetEl.getBoundingClientRect().top + (window.pageYOffset || document.documentElement.scrollTop);
-            window.scrollTo(0, top);
+        const windowH = window.innerHeight;
+        const isDesktop = window.innerWidth > 768;
+        const currentScrollY = window.pageYOffset || document.documentElement.scrollTop;
+        const container = targetEl.querySelector('.container') || targetEl;
+        const rect = container.getBoundingClientRect();
+        const containerTop = rect.top + currentScrollY;
+        const containerH = container.offsetHeight;
+
+        if (isDesktop) {
+            if (containerH <= windowH) {
+                const targetY = containerTop - Math.max(30, (windowH - containerH) / 2);
+                window.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' });
+            } else {
+                const targetY = containerTop - 65;
+                window.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' });
+            }
+        } else {
+            try {
+                targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } catch (err) {
+                const top = targetEl.getBoundingClientRect().top + currentScrollY;
+                window.scrollTo(0, top);
+            }
         }
     }
 
