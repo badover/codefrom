@@ -163,6 +163,9 @@ document.addEventListener('DOMContentLoaded', function() {
         let snowflakes = [];
         let snowWidth = 0;
         let snowHeight = 0;
+        let snowPixelRatio = 0;
+        let snowMobile = false;
+        let snowElapsedTime = 0;
         // Only opaque surfaces occlude snow; text boxes leave their empty space clear.
         const snowSurfaceSelector = (
             '.card-window, .card-wing, .joyrent-card-inner, .stat, .price-item, ' +
@@ -173,16 +176,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
         function resizeSnow() {
             const rect = snowCanvas.getBoundingClientRect();
-            snowWidth = rect.width;
-            snowHeight = rect.height;
+            if (!rect.width || !rect.height) return;
             const mobile = window.innerWidth <= 768;
             const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            if (rect.width === snowWidth && rect.height === snowHeight &&
+                dpr === snowPixelRatio && mobile === snowMobile) return;
+
+            snowWidth = rect.width;
+            snowHeight = rect.height;
+            snowMobile = mobile;
+            snowPixelRatio = dpr;
             snowCanvas.width = Math.round(snowWidth * dpr);
             snowCanvas.height = Math.round(snowHeight * dpr);
             snowContext.setTransform(dpr, 0, 0, dpr, 0, 0);
-            snowflakes = Array.from({ length: mobile ? 11 : 24 }, () => {
+
+            // Browser toolbar changes must never randomize existing particles.
+            const count = mobile ? 11 : 24;
+            if (snowflakes.length > count) snowflakes.length = count;
+            while (snowflakes.length < count) {
                 const depth = Math.random();
-                return {
+                snowflakes.push({
                     x: Math.random(),
                     y: Math.random() * snowHeight,
                     size: 26 + depth * 8,
@@ -191,13 +204,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     angle: Math.random() * Math.PI * 2,
                     spin: (Math.random() - 0.5) * 0.24,
                     phase: Math.random() * Math.PI * 2
-                };
-            });
+                });
+            }
         }
 
         function drawSnow(time) {
             const elapsed = snowPreviousTime ? Math.min((time - snowPreviousTime) / 1000, 0.05) : 0;
             snowPreviousTime = time;
+            snowElapsedTime += elapsed;
             snowContext.clearRect(0, 0, snowWidth, snowHeight);
             const canvasTop = snowCanvas.getBoundingClientRect().top;
             // Read current bounds so scrolling and card reveal animations are respected.
@@ -210,11 +224,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     top: rect.top - canvasTop, bottom: rect.bottom - canvasTop, radius }];
             });
             for (const flake of snowflakes) {
-                flake.y += flake.speed * elapsed;
-                flake.angle += flake.spin * elapsed;
+                flake.y += flake.speed * elapsed * (snowMobile ? 0.8 : 1);
+                flake.angle += flake.spin * elapsed * (snowMobile ? 0.4 : 1);
                 if (flake.y > snowHeight + flake.size) flake.y = -flake.size;
                 const radius = flake.size / 2;
-                const drift = Math.sin(time / 3000 + flake.phase) * 7;
+                const drift = Math.sin(snowElapsedTime / (snowMobile ? 5 : 3) + flake.phase) * (snowMobile ? 2.5 : 7);
                 const inset = radius + 10;
                 const x = inset + flake.x * Math.max(0, snowWidth - 2 * inset) + drift;
                 snowContext.save();
@@ -252,8 +266,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        window.addEventListener('resize', syncSnow);
-        if ('ResizeObserver' in window) new ResizeObserver(syncSnow).observe(snowCanvas);
+        window.addEventListener('resize', resizeSnow, { passive: true });
+        if ('ResizeObserver' in window) new ResizeObserver(resizeSnow).observe(snowCanvas);
         snowMotion.addEventListener('change', syncSnow);
         document.addEventListener('visibilitychange', syncSnow);
         syncSnow();

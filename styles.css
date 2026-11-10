@@ -1866,3 +1866,9 @@ html { -webkit-text-size-adjust: 100%; }
     position: relative;
     z-index: 6;
 }
+
+
+/* Keep the snow field steady while mobile browser toolbars slide in and out. */
+@media (max-width: 768px) {
+    .snow-canvas { height: 100lvh; }
+}
