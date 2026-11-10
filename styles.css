@@ -1104,7 +1104,7 @@ footer {
     width: 100vw;
     height: 100vh;
     pointer-events: none;
-    z-index: 9995;
+    z-index: 5;
 }
 
 .xmas-side {
@@ -1825,4 +1825,44 @@ footer {
         display: flex !important;
         margin-top: 18px !important;
     }
+}
+
+
+/* Rounded card silhouettes occlude the snow as it passes behind them. */
+.snow-canvas[hidden] { display: none; }
+.snow-canvas { width: 100%; height: 100%; }
+html { -webkit-text-size-adjust: 100%; }
+@media (max-width: 1024px) {
+    .projects-grid, .pricing-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .project-card-slot, .project-joyrent-card, .price-item { min-width: 0; }
+    .card-base { min-width: 0; max-width: 100%; flex: 1 1 100%; }
+    .project-content, .joyrent-card-content { min-width: 0; overflow-wrap: anywhere; }
+    .contact-btn, .contact-copy-btn { min-width: 0; overflow-wrap: anywhere; }
+    .contact-btn svg, .contact-copy-btn > svg { flex-shrink: 0; }
+}
+@media (max-width: 640px) {
+    .projects-grid, .pricing-grid { grid-template-columns: minmax(0, 1fr); }
+    .container, .header-container {
+        padding-left: max(16px, env(safe-area-inset-left));
+        padding-right: max(16px, env(safe-area-inset-right));
+    }
+    header { padding-top: calc(22px + env(safe-area-inset-top)); }
+    .contact-copy-btn span:first-of-type { min-width: 0; overflow-wrap: anywhere; }
+}
+
+
+/* Text sits above snow without hiding the empty space in its layout box. */
+.hero h1,
+.hero p,
+.section-title,
+.pricing-title,
+.pricing-subtitle,
+.contact-section h2,
+.contact-subtitle,
+.footer-logo,
+.footer-tagline,
+.contact-btn,
+.contact-copy-btn {
+    position: relative;
+    z-index: 6;
 }
